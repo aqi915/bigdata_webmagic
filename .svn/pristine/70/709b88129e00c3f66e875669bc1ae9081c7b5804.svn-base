@@ -1,0 +1,21 @@
+package com.kingtop.bigdata.mobi.medical.yihucom.test;
+
+import com.kingtop.bigdata.mobi.medical.yihucom.mongo.MongoDaoImpl;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
+public class MongoUpdateTest {
+
+	public static void main(String [] args){
+		DBObject query = new BasicDBObject();
+		query.put("intro_url", "http://old.yihu.com/doctor/fj/590FD2FF9C8C4908BFBF4DDC352CCC7D_introduction.shtml");
+		
+		DBObject updateValue = new BasicDBObject();
+		updateValue.put("skill", "test_skill");
+		updateValue.put("desc", "test_desc");
+		DBObject set = new BasicDBObject("$set",updateValue);
+		MongoDaoImpl.getInstance().update("medical_doctor", query, set);
+	}
+	
+	
+}

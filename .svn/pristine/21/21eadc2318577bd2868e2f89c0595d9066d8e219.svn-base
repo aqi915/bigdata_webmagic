@@ -1,0 +1,25 @@
+package com.kingtop.bigdata.mobi.medical.yihucom.repo;
+
+import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.Setter;
+
+
+
+@SuppressWarnings("serial")
+public class Area implements Serializable{
+
+	@Getter @Setter
+	private int level;
+	
+	@Getter @Setter
+	private String name;
+	
+	@Getter @Setter
+	private String belong;
+	
+	@Getter @Setter
+	private String url;
+	
+}

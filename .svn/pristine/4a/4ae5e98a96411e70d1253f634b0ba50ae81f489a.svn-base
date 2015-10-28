@@ -1,0 +1,47 @@
+package com.kingtop.bigdata.mobi.medical.yihucom.repo;
+
+import lombok.Getter;
+import lombok.Setter;
+
+public class Doctor {
+
+	@Getter @Setter
+	private String source;
+	
+	@Getter @Setter
+	private String hospital;
+	
+	@Getter @Setter
+	private String hospital_url;
+	
+	@Getter @Setter
+	private String office_type;
+	
+	@Getter @Setter
+	private String office;
+	
+	@Getter @Setter
+	private String office_url;
+	
+	@Getter @Setter
+	private String url;
+	
+	@Getter @Setter
+	private String name;
+	
+	//职称
+	@Getter @Setter
+	private String title;
+	
+	@Getter @Setter
+	private String intro_url;
+	
+	//擅长
+	@Getter @Setter
+	private String skill;
+	
+	@Getter @Setter
+	private String desc;
+	
+	
+}

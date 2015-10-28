@@ -1,0 +1,131 @@
+package com.kingtop.bigdata.mobi.medical.yihucom.mongo;
+
+import java.util.*;
+
+import com.mongodb.*;
+
+public class MongoDaoImpl implements MongoDao {
+
+	private static final MongoDaoImpl mongoDao = new MongoDaoImpl();
+
+	private final String HOST = "127.0.0.1";
+	private final String DB_NAME = "bigdata_mobi";
+	private MongoClient mongoClient = null;
+
+	public static MongoDaoImpl getInstance() {
+		return mongoDao;
+	}
+
+	private MongoDaoImpl() {
+		if (mongoClient == null) {
+			MongoClientOptions.Builder build = new MongoClientOptions.Builder();
+			build.connectionsPerHost(50); // 与目标数据库能够建立的最大connection数量为50
+			build.threadsAllowedToBlockForConnectionMultiplier(50); // 如果当前所有的connection都在使用中，则每个connection上可以有50个线程排队等待
+			build.maxWaitTime(1000 * 60 * 2);
+			build.connectTimeout(1000 * 60 * 1); // 与数据库建立连接的timeout设置为1分钟
+			MongoClientOptions myOptions = build.build();
+			try {
+				// 数据库连接实例
+				mongoClient = new MongoClient(HOST, myOptions);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public DB getDb() {
+		return mongoClient.getDB(DB_NAME);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public DBCollection getCollection(String collectionName) {
+		return mongoClient.getDB(DB_NAME).getCollection(collectionName);
+	}
+
+	@Override
+	public boolean insert(String collectionName, DBObject object) {
+		DBCollection collection = this.getCollection(collectionName);
+		collection.insert(object);
+		return true;
+	}
+
+	@Override
+	public boolean update(String collectionName,DBObject query,DBObject updateValue){
+		DBCollection collection = this.getCollection(collectionName);
+		collection.update(query, updateValue);
+		return true;
+	}
+	
+	@Override
+	public List<DBObject> find(String collectionName, Map<String, Object> map,
+			int num) {
+		List<DBObject> resultList = new ArrayList<DBObject>();
+
+		DBCollection dbCollection = null;
+		DBCursor cursor = null;
+		if (map != null) {
+			try {
+				dbCollection = this.getCollection(collectionName);
+
+				// 构建查询条件
+				BasicDBObject queryObj = new BasicDBObject();
+				Iterator<String> it = map.keySet().iterator();
+				while(it.hasNext()){
+					String key = it.next();
+					Object value = map.get(key);
+							
+					queryObj.put(key, value);
+				}
+				
+				cursor = dbCollection.find(queryObj); // 查询获取数据
+				int count = 0;
+				if (num != -1) { // 判断是否是返回全部数据，num=-1返回查询全部数据，num!=-1则返回指定的num数据
+					while (count != num && cursor.hasNext()) {
+						resultList.add(cursor.next());
+						count++;
+					}
+				} else {
+					while (cursor.hasNext()) {
+						resultList.add(cursor.next());
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (null != cursor) {
+					cursor.close();
+				}
+			}
+		}
+
+		return resultList;
+	}
+	
+	@Override
+	public List<DBObject> findAll(String collectionName) {
+		List<DBObject> resultList = new ArrayList<DBObject>();
+
+		DBCollection dbCollection = null;
+		DBCursor cursor = null;
+		try {
+			dbCollection = this.getCollection(collectionName);
+
+			cursor = dbCollection.find(); 
+			while (cursor.hasNext()) {
+				resultList.add(cursor.next());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (null != cursor) {
+				cursor.close();
+			}
+		}
+
+		return resultList;
+	}
+
+}
